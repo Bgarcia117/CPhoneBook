@@ -27,6 +27,7 @@ void freeArray(Array*);
 void addContact(Array*);
 int getContactIndex(Array*);
 void displayContactInfo(const Array*, int);
+void deleteAllContacts(Array*);
 
 
 int main() {
@@ -42,7 +43,7 @@ int main() {
 		printf("2) Delete a contact\n");
 		printf("3) Find a contact\n");
 		printf("4) Display contacts\n");
-		printf("5) Erase a contact\n");
+		printf("5) Delete all contact\n");
 		printf("6) Close program\n");
 		printf("Please make a selection(1-6): \n");
 		scanf("%d", &selection);
@@ -63,10 +64,9 @@ int main() {
 					printf("There are no contacts saved.");
 					break;
 				}
-				
-			    displayContactInfo(&friends, getContactIndex(&friends));
-	
-	            
+				else {
+					deleteAllContacts(&friends);
+				}
 
 				break;
 			case 3:
@@ -74,6 +74,13 @@ int main() {
 			case 4:
 				break;
 			case 5:
+				if (friends.used == 0) {
+					printf("There are no contacts saved.");
+					break;
+				}
+				else {
+					deleteAllContacts(&friends);
+				}
 				break;
 			case 6:
 				break;
@@ -116,14 +123,22 @@ void freeArray(Array* a) {
 }
 
 void addContact(Array* a) {
-	printf("Enter a first name: ");
+	printf("-----------------------------------------------\n");
 	// Arrow to access members of the Array struct since a pointer is being used
 	// Dot operator for access to members of the current Contact Struct
+	printf("Enter a first name: ");
 	fgets(a->array[a->used].firstName, MAX_LENGTH, stdin); 
+	// Removes trailing \n
+	a->array[a->used].firstName[strcspn(a->array[a->used].firstName, "\n")] = 0;
+
 	printf("Enter a last name: ");
 	fgets(a->array[a->used].lastName, MAX_LENGTH, stdin);
+	a->array[a->used].lastName[strcspn(a->array[a->used].lastName, "\n")] = 0;
+
 	printf("Enter a phone number: ");
 	fgets(a->array[a->used].phoneNum, MAX_LENGTH, stdin);
+	a->array[a->used].phoneNum[strcspn(a->array[a->used].phoneNum, "\n")] = 0;
+
 	a->used++;
 }
 
@@ -133,8 +148,11 @@ int getContactIndex(Array* a) {
 
 	printf("Enter a first name: ");
 	fgets(_firstName, MAX_LENGTH, stdin); // Needs error handling for \n 
+	_firstName[strcspn(_firstName, "\n")] = 0;
+
 	printf("Enter a last name: ");
 	fgets(_lastName, MAX_LENGTH, stdin);
+	_firstName[strcspn(_firstName, "\n")] = 0;
 	
 	for (int i = 0; i <= a->used; i++) {
 		// Compares temp variable with names in the contact structures
@@ -152,9 +170,27 @@ void displayContactInfo(const Array* a, int index) {
 		return;
 	}
 
-	printf("-----------------------------------------------\n");
-	printf("First Name: %s", a->array[index].firstName);
-	printf("Last Name: %s", a->array[index].lastName);
-	printf("Phone Number: %s", a->array[index].phoneNum);
+	printf("First Name: %s\n", a->array[index].firstName);
+	printf("Last Name: %s\n", a->array[index].lastName);
+	printf("Phone Number: %s\n", a->array[index].phoneNum);
 	printf("-----------------------------------------------\n");
 }
+
+void deleteContact(Array* a) {
+	char userChoice[5];
+
+	printf("Are you sure you want to delete all contacts?\n");
+	printf("Type Yes or No: \n");
+	fgets(userChoice, 5, stdin);
+	userChoice[strcspn(userChoice, "\n")] = 0;
+
+	if (strcmp(userChoice, "No") == 0 || strcmp(userChoice, "no") == 0) {
+		return;
+	}
+	else {
+		free(a->array); // Frees memory of the dynamically allocated memory
+		a->array = NULL; // Elminates dangling pointer
+		a->used = 0;
+	}
+}
+
