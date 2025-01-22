@@ -36,6 +36,7 @@ int main() {
 	initArray(&friends, INITIAL_CAPACITY); // Initializes members of the structures
 
 	int selection = 0;
+	char userChoice[5];
 
 	while (selection != 6) {
 		printf("Please choose from the following options: \n");
@@ -59,13 +60,13 @@ int main() {
 				}
 
 				break;
-			case 2:
+			case 2: // Delte a contact
 				if (friends.used == 0) {
 					printf("There are no contacts saved.");
 					break;
 				}
 				else {
-					deleteAllContacts(&friends);
+					// deleteAllContacts(&friends);
 				}
 
 				break;
@@ -78,8 +79,19 @@ int main() {
 					printf("There are no contacts saved.");
 					break;
 				}
+
+				printf("Are you sure you want to delete all contacts?\n");
+				printf("Type Yes or No: \n");
+
+				fgets(userChoice, 5, stdin);
+				userChoice[strcspn(userChoice, "\n")] = 0;
+
+				if (strcmp(userChoice, "No") == 0 || strcmp(userChoice, "no") == 0) {
+					return;
+				}
 				else {
 					deleteAllContacts(&friends);
+					initArray(&friends, INITIAL_CAPACITY); // Re-initalizes pointers to Contact structs
 				}
 				break;
 			case 6:
@@ -176,21 +188,10 @@ void displayContactInfo(const Array* a, int index) {
 	printf("-----------------------------------------------\n");
 }
 
-void deleteContact(Array* a) {
-	char userChoice[5];
-
-	printf("Are you sure you want to delete all contacts?\n");
-	printf("Type Yes or No: \n");
-	fgets(userChoice, 5, stdin);
-	userChoice[strcspn(userChoice, "\n")] = 0;
-
-	if (strcmp(userChoice, "No") == 0 || strcmp(userChoice, "no") == 0) {
-		return;
-	}
-	else {
-		free(a->array); // Frees memory of the dynamically allocated memory
-		a->array = NULL; // Elminates dangling pointer
-		a->used = 0;
-	}
+// Function frees dynamically allocated memory
+void deleteAllContacts(Array* a) {
+	free(a->array); // Frees memory of the dynamically allocated memory
+	a->array = NULL; // Elminates dangling pointer
+	a->used = 0;
 }
 
